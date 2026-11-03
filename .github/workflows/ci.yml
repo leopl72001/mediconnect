@@ -1,9 +1,10 @@
-name: Java CI
+name: MediConnect CI
 on:
   push:
   pull_request:
+
 jobs:
-  test:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12,4 +13,9 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - run: mvn -B test
+      - name: Compilar, probar y empaquetar
+        run: mvn -B verify
+      - name: Validar Docker Compose
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
