@@ -13,7 +13,7 @@ import com.universidad.mediconnect2.auth.*;
 import com.universidad.mediconnect2.shared.NotFoundException;
 
 @Service
-@Profile("prod")
+@Profile({"prod","docker"})
 public class ClinicalNoteService {
     private final ClinicalNoteRepository notes;
     private final AppointmentRepository appointments;

@@ -3,9 +3,9 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:?define POSTGRES_DB in .env}
-      POSTGRES_USER: ${POSTGRES_USER:?define POSTGRES_USER in .env}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?define POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?Configura POSTGRES_DB en .env}
+      POSTGRES_USER: ${POSTGRES_USER:?Configura POSTGRES_USER en .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD en .env}
     ports: ["127.0.0.1:5433:5432"]
     volumes: [postgres_data:/var/lib/postgresql/data]
     healthcheck:
@@ -16,8 +16,8 @@ services:
   mongo:
     image: mongo:8.0
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?define MONGO_ROOT_USERNAME in .env}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?define MONGO_ROOT_PASSWORD in .env}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?Configura MONGO_ROOT_USERNAME en .env}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Configura MONGO_ROOT_PASSWORD en .env}
     ports: ["127.0.0.1:27018:27017"]
     volumes: [mongo_data:/data/db]
   redis:
@@ -29,6 +29,25 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/mediconnect2?authSource=admin
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:?Configura JWT_SECRET en .env}
+      DEV_ADMIN_EMAIL: ${DEV_ADMIN_EMAIL:?Configura DEV_ADMIN_EMAIL en .env}
+      DEV_ADMIN_PASSWORD: ${DEV_ADMIN_PASSWORD:?Configura DEV_ADMIN_PASSWORD en .env}
+    ports: ["127.0.0.1:8081:8081"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      mongo: {condition: service_started}
+      redis: {condition: service_healthy}
 volumes:
   postgres_data:
   mongo_data:

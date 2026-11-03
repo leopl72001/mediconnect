@@ -9,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("dev")
+@Profile({"dev","docker"})
 public class DevAdminInitializer implements ApplicationRunner {
     private final UserAccountRepository users;
     private final PasswordEncoder passwords;

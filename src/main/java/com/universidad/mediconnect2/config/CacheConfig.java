@@ -12,7 +12,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 @EnableCaching
 public class CacheConfig {
     @Bean
-    @Profile("prod")
+    @Profile({"prod","docker"})
     RedisCacheManagerBuilderCustomizer redisCacheTtls() {
         return builder -> builder
                 .withCacheConfiguration("doctorsBySpecialty",

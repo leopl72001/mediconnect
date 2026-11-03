@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Profile("prod")
+@Profile({"prod","docker"})
 public class ClinicalNoteController {
     private final ClinicalNoteService service;
     public ClinicalNoteController(ClinicalNoteService service) { this.service = service; }

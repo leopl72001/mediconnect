@@ -1,19 +1,21 @@
-# Trazabilidad de la rúbrica universitaria
+# Estado de la entrega
 
 | Requisito | Estado |
 |---|---|
 | Java 21 / Spring Boot / Maven | Implementado |
-| JWT HS512, BCrypt, roles, `@PreAuthorize` | Implementado |
-| Citas, bloqueo transaccional, solapamiento 409 y cancelación >24 h | Implementado |
-| DTOs con records y ProblemDetail | Implementado |
-| Swagger, Actuator, Virtual Threads | Implementado |
-| Pruebas unitarias y CI | Implementado inicialmente |
-| Docker Compose PostgreSQL/MongoDB/Redis | Infraestructura definida |
-| PostgreSQL integrado y migraciones SQL | Pendiente |
-| Notas clínicas MongoDB y auditoría | Pendiente |
-| OpenFDA con RestClient, Resilience4j y fallback | Pendiente |
-| Caché Redis con TTL | Pendiente |
-| MapStruct en mappers reales | Pendiente |
-| Pruebas de integración, Postman completo y video | Pendiente |
+| JWT HS512, BCrypt, roles, @PreAuthorize | Implementado |
+| Citas atómicas, solapamientos 409, cancelación >24 h | Implementado |
+| DTOs records, MapStruct, ProblemDetail | Implementado |
+| Swagger, Actuator, métricas, virtual threads | Implementado |
+| PostgreSQL / MongoDB / Redis | Integrados en perfil Docker; requieren prueba de extremo a extremo |
+| Notas clínicas con autoría y acceso por paciente | Implementado en perfil Docker |
+| OpenFDA + circuit breaker + fallback | Implementado; requiere prueba de proveedor real |
+| Redis TTL 10 min / 24 h | Configurado en perfil Docker |
+| Docker Compose y Dockerfile | Implementado |
+| Tests unitarios, integración H2, CI | Implementados inicialmente |
+| Colección Postman | Implementada, variables a configurar |
+| Migraciones SQL para producción | Pendiente |
+| Testcontainers PostgreSQL/MongoDB/Redis | Pendiente |
+| Video de sustentación | Guion incluido; grabación pendiente |
 
-No presentar esta versión como entrega final hasta completar y verificar los elementos pendientes.
+**No confundir la ejecución verde de Maven con una verificación completa del despliegue Docker.**

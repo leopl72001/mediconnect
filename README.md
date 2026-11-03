@@ -1,22 +1,21 @@
-# MediConnect — API de gestión de citas médicas
+# MediConnect — Gestión de citas médicas
 
-Proyecto universitario construido desde cero con **Java 21, Spring Boot 3.5.7 y Maven**. Se desarrolla en un repositorio independiente del sistema anterior.
+**Proyecto universitario nuevo**, independiente del repositorio anterior. Backend REST con Java 21, Spring Boot 3.5.7, Maven, Spring Security, PostgreSQL, MongoDB y Redis.
 
-## Funcionalidad implementada
+## Características
 
-- Registro de pacientes, autenticación **JWT HS512**, contraseñas BCrypt y roles PATIENT/DOCTOR/ADMIN.
-- Administración de médicos y consultorios; catálogo público de especialidades.
-- Reserva de citas con bloqueo pesimista, validación de solapamientos (HTTP 409) y cancelación con más de 24 horas de anticipación.
-- Spring Security stateless, `@PreAuthorize`, DTOs con records, ProblemDetail, Swagger, Actuator y virtual threads.
-- Perfil **dev** con H2 en memoria, diseñado para arrancar sin Docker, MongoDB ni Redis.
-- Tests de salud, autenticación y reglas de citas; CI con GitHub Actions.
-- Docker Compose preparado para PostgreSQL, MongoDB y Redis.
+- Registro de pacientes y login con **JWT HS512**, BCrypt y roles PATIENT, DOCTOR y ADMIN.
+- Especialidades, médicos, consultorios y administración protegida.
+- Citas transaccionales con bloqueo pesimista del médico, rechazo de solapamientos **409 Conflict**, cancelación con más de 24 h.
+- Notas clínicas en MongoDB: solo escribe el médico asignado; el paciente consulta exclusivamente las suyas; auditoría de autor y fecha.
+- Prescripciones con consulta a OpenFDA, timeout de 1.5 s, Resilience4j Circuit Breaker y fallback `MANUAL_VALIDATION_REQUIRED`.
+- Redis con caché de médicos (TTL 10 minutos) y medicamentos validados (TTL 24 horas).
+- DTOs con records, MapStruct, ProblemDetail, Swagger/OpenAPI, Actuator, métricas y virtual threads.
+- Docker Compose, Postman, pruebas JUnit/Mockito y CI GitHub Actions.
 
-**Estado:** esta versión es una base funcional de la entrega. No están implementados todavía los módulos de notas clínicas en MongoDB, prescripciones OpenFDA, caché Redis ni las migraciones para producción. Consulta `docs/plan-de-entrega.md`.
+## Opción A: ejecutar sin Docker (DEV)
 
-## Arranque local en Windows
-
-Requisitos: JDK 21, Maven 3.9+, Git.
+Requisitos: **JDK 21, Maven 3.9+** y Git.
 
 ```powershell
 git clone https://github.com/leopl72001/mediconnect.git
@@ -25,40 +24,63 @@ mvn test
 mvn spring-boot:run
 ```
 
-La aplicación usa el puerto **8081** para no chocar con el proyecto anterior.
+En `dev`, el servidor usa H2 en memoria y desactiva MongoDB/Redis. Los endpoints de notas clínicas solo están habilitados en los perfiles `docker` y `prod`.
 
-- Salud: http://localhost:8081/actuator/health
+- Health: http://localhost:8081/actuator/health
 - Swagger: http://localhost:8081/swagger-ui.html
 - Especialidades: http://localhost:8081/api/v1/specialties
 
-En el perfil dev, el endpoint health debe devolver `"status":"UP"`. El comando `mvn spring-boot:run` permanece activo mientras el servidor está funcionando.
+`mvn spring-boot:run` permanece activo mientras la API está ejecutándose. Para detenerla, Ctrl+C.
 
-## Registro y login
-
-```powershell
-$body = @{email='paciente@example.com';password='Password123!';firstName='Ana';lastName='Lopez'} | ConvertTo-Json
-Invoke-RestMethod -Uri http://localhost:8081/api/v1/auth/register -Method Post -ContentType 'application/json' -Body $body
-$login = @{email='paciente@example.com';password='Password123!'} | ConvertTo-Json
-Invoke-RestMethod -Uri http://localhost:8081/api/v1/auth/login -Method Post -ContentType 'application/json' -Body $login
-```
-
-Para un administrador **solo en desarrollo**, define `DEV_ADMIN_EMAIL` y `DEV_ADMIN_PASSWORD` antes de iniciar el servidor. No existe registro público de administradores.
-
-## Infraestructura Docker (opcional)
+## Opción B: ejecutar todo con Docker Desktop (perfil docker)
 
 ```powershell
+git clone https://github.com/leopl72001/mediconnect.git
+cd mediconnect
 Copy-Item .env.example .env
-# Edita las credenciales de .env; nunca subas .env al repositorio.
-docker compose up -d
-docker compose ps
 ```
 
-Puertos: PostgreSQL 5433, MongoDB 27018 y Redis 6380, todos enlazados a localhost. **No cambies a perfil prod todavía:** requiere migraciones y pruebas de integración.
+**Edita `.env` y cambia las contraseñas, el correo admin y `JWT_SECRET` (64+ bytes) antes de continuar.** No compartas ese archivo ni lo subas a GitHub. Evita caracteres reservados de URL en las credenciales de Mongo, o codifícalos.
 
-## Seguridad
+```powershell
+docker compose up --build -d
+docker compose ps
+docker compose logs -f app
+```
 
-El JWT usa HS512 con un secreto de al menos 64 bytes. El valor de desarrollo es exclusivamente local. En producción se debe definir `JWT_SECRET` y proteger las credenciales.
+La aplicación escucha en http://localhost:8081. PostgreSQL en 5433, MongoDB en 27018 y Redis en 6380, enlazados a localhost para no interferir con el proyecto anterior.
 
-## Verificación
+El perfil `docker` utiliza `ddl-auto=update` **solo para demostración local**. El perfil `prod` usa `validate` y necesita migraciones SQL versionadas antes de un despliegue real.
 
-La ejecución de `mvn test` en GitHub Actions es la fuente de verdad para saber si el proyecto compila y pasan sus pruebas. No se afirma que esta versión haya sido probada contra los tres contenedores.
+## Flujo rápido
+
+1. `POST /api/v1/auth/register` registra un paciente.
+2. `POST /api/v1/auth/login` devuelve `accessToken`.
+3. Admin: `POST /api/v1/admin/offices` y `POST /api/v1/admin/doctors`.
+4. Paciente: `POST /api/v1/appointments`, `GET /api/v1/appointments/me`, `PATCH /api/v1/appointments/{id}/cancel`.
+5. Médico: `GET /api/v1/appointments/doctor/me`, `POST /api/v1/appointments/{id}/clinical-notes` (Docker), `POST /api/v1/appointments/{id}/prescriptions`.
+6. Paciente: `GET /api/v1/clinical-notes/me` (Docker), `GET /api/v1/prescriptions/me`.
+
+Importa `postman/MediConnect.postman_collection.json` y completa las variables de credenciales y IDs. Nunca pegues JWT reales en un repositorio público.
+
+## Administrador de desarrollo
+
+En DEV, antes de iniciar el servidor, puedes establecer:
+
+```powershell
+$env:DEV_ADMIN_EMAIL='admin@local.test'
+$env:DEV_ADMIN_PASSWORD='TuClaveSeguraDePrueba'
+mvn spring-boot:run
+```
+
+En Docker, las mismas variables se leen del archivo `.env`. No existe registro público de administradores.
+
+## Calidad y alcance
+
+```powershell
+mvn test
+```
+
+GitHub Actions ejecuta pruebas de Spring Boot, seguridad y reglas de negocio. Los tests usan H2; **aún se requiere comprobar manualmente el despliegue integrado Docker/PostgreSQL/MongoDB/Redis y el comportamiento real de OpenFDA**.
+
+Documentación adicional: `docs/requirements-traceability.md`, `docs/plan-de-entrega.md` y `docs/video-script.md`.
