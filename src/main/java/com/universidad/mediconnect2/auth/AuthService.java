@@ -46,7 +46,7 @@ public class AuthService {
         }
         Instant now=clock.instant();
         JwtClaimsSet claims=JwtClaimsSet.builder()
-                .issuer("mediconnect2")
+                .issuer("mediconnect")
                 .subject(user.getEmail())
                 .issuedAt(now)
                 .expiresAt(now.plus(expiryMinutes, ChronoUnit.MINUTES))
