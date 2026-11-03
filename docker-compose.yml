@@ -14,7 +14,7 @@ services:
       timeout: 5s
       retries: 10
   mongo:
-    image: mongo:8.0
+    image: mongo:7.0
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?Configura MONGO_ROOT_USERNAME en .env}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Configura MONGO_ROOT_PASSWORD en .env}
