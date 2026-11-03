@@ -6,6 +6,7 @@
 | Seguridad stateless | config/SecurityConfig.java |
 | JWT HS512 y BCrypt | config/JwtConfig.java, auth/AuthService.java |
 | Roles y @PreAuthorize | auth/UserRole.java, appointments/AppointmentService.java |
+| Perfil de paciente | patients/PatientController.java, PatientService.java |
 | PostgreSQL / H2 | application-docker.properties / application-dev.properties |
 | MongoDB y auditoria | clinical/ClinicalNoteDocument.java, ClinicalNoteService.java |
 | Redis TTL | config/CacheConfig.java, catalog/CatalogController.java, prescriptions/OpenFdaService.java |

@@ -200,6 +200,59 @@
               }
             }
           ]
+        },
+        {
+          "name": "Mi perfil de paciente",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients/me"
+            }
+          }
+        },
+        {
+          "name": "Actualizar perfil de paciente",
+          "request": {
+            "method": "PUT",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{patientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients/me"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"birthDate\": \"1994-05-11\",\n  \"phone\": \"+573001112233\",\n  \"address\": \"Cartagena\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
         }
       ]
     },

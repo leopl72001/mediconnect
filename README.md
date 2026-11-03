@@ -5,7 +5,7 @@
 ## Características
 
 - Registro de pacientes y login con **JWT HS512**, BCrypt y roles PATIENT, DOCTOR y ADMIN.
-- Especialidades, médicos, consultorios y administración protegida.
+- Perfil de paciente (consulta y actualización de fecha de nacimiento, teléfono y dirección), especialidades, médicos, consultorios y administración protegida.
 - Citas transaccionales con bloqueo pesimista del médico, rechazo de solapamientos **409 Conflict**, cancelación con más de 24 h.
 - Notas clínicas en MongoDB: solo escribe el médico asignado; el paciente consulta exclusivamente las suyas; auditoría de autor y fecha.
 - Prescripciones con consulta a OpenFDA, timeout de 1.5 s, Resilience4j Circuit Breaker y fallback `MANUAL_VALIDATION_REQUIRED`.
@@ -56,6 +56,7 @@ El perfil `docker` utiliza `ddl-auto=update` **solo para demostración local**. 
 
 1. `POST /api/v1/auth/register` registra un paciente.
 2. `POST /api/v1/auth/login` devuelve `accessToken`.
+3. Paciente: `GET /api/v1/patients/me` y `PUT /api/v1/patients/me`.
 3. Admin: `POST /api/v1/admin/offices` y `POST /api/v1/admin/doctors`.
 4. Paciente: `POST /api/v1/appointments`, `GET /api/v1/appointments/me`, `PATCH /api/v1/appointments/{id}/cancel`.
 5. Médico: `GET /api/v1/appointments/doctor/me`, `POST /api/v1/appointments/{id}/clinical-notes` (Docker), `POST /api/v1/appointments/{id}/prescriptions`.
