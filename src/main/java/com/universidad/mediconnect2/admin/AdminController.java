@@ -5,6 +5,7 @@ import java.util.UUID;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,7 @@ public class AdminController {
     }
 
     @PostMapping("/doctors")
+    @CacheEvict(cacheNames="doctorsBySpecialty", allEntries=true)
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public CreatedResponse createDoctor(@Valid @RequestBody DoctorRequest request) {
