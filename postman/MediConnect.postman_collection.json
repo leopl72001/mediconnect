@@ -214,7 +214,21 @@
             "url": {
               "raw": "{{baseUrl}}/api/v1/specialties"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const list = pm.response.json();",
+                  "  if (Array.isArray(list) && list.length > 0) pm.collectionVariables.set('specialtyId', list[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Doctores publicos",
@@ -360,7 +374,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"doctorId\": \"{{doctorId}}\",\n  \"officeId\": \"{{officeId}}\",\n  \"startTime\": \"2027-02-01T15:00:00Z\",\n  \"endTime\": \"2027-02-01T15:30:00Z\"\n}",
+              "raw": "{\n  \"doctorId\": \"{{doctorId}}\",\n  \"officeId\": \"{{officeId}}\",\n  \"startTime\": \"{{startTime}}\",\n  \"endTime\": \"{{endTime}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -369,6 +383,19 @@
             }
           },
           "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const start = new Date(Date.now() + 72 * 60 * 60 * 1000);",
+                  "start.setUTCHours(15, 0, 0, 0);",
+                  "const end = new Date(start.getTime() + 30 * 60 * 1000);",
+                  "pm.collectionVariables.set('startTime', start.toISOString());",
+                  "pm.collectionVariables.set('endTime', end.toISOString());"
+                ]
+              }
+            },
             {
               "listen": "test",
               "script": {
