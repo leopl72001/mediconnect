@@ -1,0 +1,76 @@
+{
+  "info": {
+    "name": "MediConnect 2 - Fase 1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/actuator/health"
+      }
+    },
+    {
+      "name": "Specialties",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/specialties"
+      }
+    },
+    {
+      "name": "Doctors",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/doctors"
+      }
+    },
+    {
+      "name": "Offices",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/offices"
+      }
+    },
+    {
+      "name": "Register patient",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/auth/register",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"paciente2@example.com\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"Ana\",\n  \"lastName\": \"Lopez\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"paciente2@example.com\",\n  \"password\": \"Password123!\"\n}"
+        }
+      }
+    }
+  ]
+}
