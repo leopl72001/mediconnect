@@ -1,0 +1,35 @@
+name: mediconnect2
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?define POSTGRES_DB in .env}
+      POSTGRES_USER: ${POSTGRES_USER:?define POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?define POSTGRES_PASSWORD in .env}
+    ports: ["127.0.0.1:5433:5432"]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  mongo:
+    image: mongo:8.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?define MONGO_ROOT_USERNAME in .env}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?define MONGO_ROOT_PASSWORD in .env}
+    ports: ["127.0.0.1:27018:27017"]
+    volumes: [mongo_data:/data/db]
+  redis:
+    image: redis:7-alpine
+    ports: ["127.0.0.1:6380:6379"]
+    volumes: [redis_data:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
