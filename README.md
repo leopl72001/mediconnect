@@ -57,10 +57,10 @@ El perfil `docker` utiliza `ddl-auto=update` **solo para demostración local**. 
 1. `POST /api/v1/auth/register` registra un paciente.
 2. `POST /api/v1/auth/login` devuelve `accessToken`.
 3. Paciente: `GET /api/v1/patients/me` y `PUT /api/v1/patients/me`.
-3. Admin: `POST /api/v1/admin/offices` y `POST /api/v1/admin/doctors`.
-4. Paciente: `POST /api/v1/appointments`, `GET /api/v1/appointments/me`, `PATCH /api/v1/appointments/{id}/cancel`.
-5. Médico: `GET /api/v1/appointments/doctor/me`, `POST /api/v1/appointments/{id}/clinical-notes` (Docker), `POST /api/v1/appointments/{id}/prescriptions`.
-6. Paciente: `GET /api/v1/clinical-notes/me` (Docker), `GET /api/v1/prescriptions/me`.
+4. Admin: `POST /api/v1/admin/offices` y `POST /api/v1/admin/doctors`.
+5. Paciente: `POST /api/v1/appointments`, `GET /api/v1/appointments/me`, `PATCH /api/v1/appointments/{id}/cancel`.
+6. Médico: `GET /api/v1/appointments/doctor/me`, `POST /api/v1/appointments/{id}/clinical-notes` (Docker), `POST /api/v1/appointments/{id}/prescriptions`.
+7. Paciente: `GET /api/v1/clinical-notes/me` (Docker), `GET /api/v1/prescriptions/me`.
 
 Importa `postman/MediConnect.postman_collection.json` y completa las variables de credenciales y IDs. Nunca pegues JWT reales en un repositorio público.
 
@@ -82,6 +82,10 @@ En Docker, las mismas variables se leen del archivo `.env`. No existe registro p
 mvn test
 ```
 
-GitHub Actions ejecuta pruebas de Spring Boot, seguridad y reglas de negocio. Los tests usan H2; **aún se requiere comprobar manualmente el despliegue integrado Docker/PostgreSQL/MongoDB/Redis y el comportamiento real de OpenFDA**.
+GitHub Actions ejecuta pruebas de Spring Boot, seguridad y reglas de negocio. En la comprobación local del 4 de noviembre de 2026 se ejecutaron **14 pruebas Maven con 0 fallos**, se verificó el despliegue Docker de PostgreSQL, MongoDB y Redis con salud `UP`, y se comprobaron reservas, seguridad por roles, notas clínicas, recetas con una respuesta `VALIDATED` de OpenFDA y caché Redis con TTL positivo. Estas pruebas son **evidencia funcional académica**, no una certificación para producción.
 
-Documentación adicional: `docs/requirements-traceability.md`, `docs/plan-de-entrega.md` y `docs/video-script.md`.
+## Entrega universitaria: repositorio y video
+
+El código fuente se entrega mediante este repositorio público. Para la explicación oral, sigue el [guion de sustentación de 5 a 7 minutos](docs/video-script.md): incluye las pantallas que debes mostrar, las pruebas representativas y precauciones para no exponer secretos. El [estado de la entrega](docs/plan-de-entrega.md) recoge los resultados comprobados. No se requiere un informe escrito para la entrega indicada.
+
+Documentación adicional: [trazabilidad técnica](docs/requirements-traceability.md), [estado de la entrega](docs/plan-de-entrega.md) y [guion del video](docs/video-script.md).
